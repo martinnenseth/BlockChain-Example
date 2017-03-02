@@ -5,6 +5,7 @@ import (
 
 	"fmt"
 	"os"
+	"io/ioutil"
 )
 type jsonItems struct {
 	Name string
@@ -39,4 +40,19 @@ func WriteInstance(name string, ip string)  {
 	}
 }
 
+/*
+ * Decodes the json file and prints its content.
+ */
+func ReadEntireJson ()  {
+	jsonFile, err := ioutil.ReadFile("output1.json")
+	if err != nil{
+		fmt.Print(err)
+	}
+	var items jsonItems // Variable to store the content of the file.
+	err = json.Unmarshal(jsonFile, &items)
+	if err != nil{
+		fmt.Println(err)
+	}
+	fmt.Println(items)
+}
 
