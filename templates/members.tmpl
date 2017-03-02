@@ -12,10 +12,10 @@
 
 
     <script>
-    $(document).ready(function () {
+        $(document).ready(function () {
 
 
-    })
+        });
     </script>
 
     <style>
@@ -60,24 +60,16 @@
         <a href="/">Home</a> <a href="/members">Medlemmer</a>
     </div>
     <div id="wrapper">
-        <center>
-            <h3>Please, fill in a username below..</h3>
-        </center>
-
 
         <center>
-            <form action="/" id="addUser" method="POST"> <!-- submit a username -->
-                <input type="text" name="username" placeholder="Username">
-                <input id="submitButton" type="submit" value="Append username to the list">
-            </form>
-
-            <span style="color:red; font-size:13px;">{{.}}</span><br>
-
-
+            <h3>Usernames we've collected so far</h3>
         </center>
+
+        <span>it will display here..</span>
+
     </div>
     <div id="footer">
-        <em>.. A system to store usernames, delivered by <span style="color:lightblue"> Big Guys Only</span></em>
+        <em>.. Et system for å ta vare på brukernavn av<span style="color:lightblue"> Big Guys Only</span></em>
     </div>
 </body>
 </html>

@@ -15,8 +15,13 @@ func main() {
 	m.Use(render.Renderer())
 
 	m.Get("/", func(r render.Render) {
-		r.HTML(200, "hello", "usernames...")
+		r.HTML(200, "hello", "")
 	})
+
+	m.Get("/members", func(r render.Render) {
+		r.HTML(200, "members", "her kommer medlemmer..")
+	})
+
 		// https://api.ipify.org
 	m.Post("/", func(r *http.Request, x render.Render)  {
 		text := string(r.FormValue("username"))
@@ -24,7 +29,7 @@ func main() {
 		bytes, _ := ioutil.ReadAll(readApi.Body)
 
 		JsonRW.WriteInstance(text, string(bytes))
-		x.HTML(200, "hello", "Brukernavnet " + text + " er lagt til i listen.")
+		x.HTML(200, "hello", "" + text + " is added to the list.")
 	})
 
 	m.Run()
