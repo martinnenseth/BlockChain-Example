@@ -30,6 +30,7 @@ func main() {
 		bytes, _ := ioutil.ReadAll(readApi.Body)
 
 		JsonRW.WriteInstance(text, string(bytes))
+		JsonRW.ReadEntireJson()
 		x.HTML(200, "hello", "" + text + " is added to the list.")
 	})
 	m.Run()

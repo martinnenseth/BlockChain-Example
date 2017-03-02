@@ -3,56 +3,62 @@ package JsonRW
 import (
 	"encoding/json"
 
-	"fmt"
-	"os"
 	"io/ioutil"
+	"log"
+	"fmt"
+	"io"
+	"os"
 )
-type jsonItems struct {
-	Name string
-	Ip string
-}
+type members []map[string]string
 
-/**
- * @param name and ip to append.
- * Creates a new instance to the json file.
- */
-func WriteInstance(name string, ip string)  {
-	//appends the parameters to the struct.
+func WriteInstance(name string, ip string) {
+	var data members
 
-
-
-	row := jsonItems{Name : name, Ip: ip}
-
-	b, err := json.Marshal(row)
-	if err != nil{
-		fmt.Println(err)
-	}
-
-	f, err := os.OpenFile("output1.json", os.O_RDWR|os.O_APPEND, 0644)
+	jsonFile, err := ioutil.ReadFile("output1.json")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-
-	defer f.Close()
-
-	if _, err = f.Write(b); err != nil {
-		panic(err)
+	err = json.Unmarshal(jsonFile, &data)
+	if err != nil {
+		log.Fatal(err)
 	}
+	instance := map[string]string{
+		"name": name,
+		"ip": ip,
+	}
+	data = append(data, instance)
+	b, err := json.MarshalIndent(data, "", "    ")
+	if err != nil {
+		log.Fatal(err)
+	}
+	ioutil.WriteFile("output1.json", b, 0644)
 }
 
 /*
  * Decodes the json file and prints its content.
  */
-func ReadEntireJson ()  {
-	jsonFile, err := ioutil.ReadFile("output1.json")
-	if err != nil{
-		fmt.Print(err)
+func ReadEntireJson ()  members{
+	jsonFile, _ := os.Open("output1.json")
+
+	var u members
+
+	dec := json.NewDecoder(jsonFile)
+	for {
+
+
+		if err:= dec.Decode(&u); err == io.EOF {
+			break
+		}else if err != nil {
+			log.Fatal(err)
+		}
+
 	}
-	var items jsonItems // Variable to store the content of the file.
-	err = json.Unmarshal(jsonFile, &items)
-	if err != nil{
-		fmt.Println(err)
+	for member := range u {
+		fmt.Printf("name: %s", u[member]["name"])
+
 	}
-	fmt.Println(items)
+	return u
 }
+
+
 
