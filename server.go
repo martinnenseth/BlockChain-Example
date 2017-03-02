@@ -4,7 +4,6 @@ import (
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/render"
 	"net/http"
-	"fmt"
 )
 
 func main() {
@@ -16,8 +15,9 @@ func main() {
 		r.HTML(200, "hello", "usernames...")
 	})
 
-	m.Post("/submitUsername", func(req *http.Request){
-		fmt.Println(req.PostForm)
+	m.Post("/", func(r *http.Request, x render.Render)  {
+		text := string(r.FormValue("username"))
+		x.HTML(200, "hello", "Brukernavnet " + text + " er lagt til i listen.")
 	})
 
 	m.Run()
