@@ -1,0 +1,102 @@
+<!-- templates/hello.tmpl -->
+
+<html>
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"> </script>
+    <script type = "text/javascript"
+            src = "https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+    <script type = "text/javascript"
+            src = "https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
+
+
+    <script>
+    $(document).ready(function () {
+        $('#wrapper').fadeIn(1000);
+        $('#wrapper').click(function () {
+            $(this).css("border-color", "black");
+        })
+        
+        $("addUser").submit(function (event) {
+            // Stop form from submitting normally
+            event.preventDefault();
+
+            // Get some values from elements on the page:
+            var $form = $( this ),
+                term = $form.find( "input[name='username']" ).val(),
+                url = $form.attr( "action" );
+
+            // Send the data using post
+            var posting = $.post( url, { s: term } ); t
+
+            // Put the results in a div
+            posting.done(function( data ) {
+                var content = $( data ).find( "#content" );
+                $( "#result" ).empty().append( content );
+            });
+        })
+
+    })
+    </script>
+
+    <style>
+    body {
+        background-color: darkgrey;
+    }
+
+    div#wrapper {
+        margin: 0 auto;
+        position: relative;
+        top:20%;
+        width:400px;
+        background-color: white;
+        padding:5px;
+        display: none;
+        -webkit-border-radius:5px;
+        -moz-border-radius:5px;
+        border-radius:5px;
+        font-family: 'Open Sans', sans-serif;
+        box-shadow: 5px 5px 5px #888888;
+
+
+    }
+        div#footer {
+            margin:0 auto;
+            position: relative;
+            top:20%;
+            width:400px;
+            padding-top:10px;
+            text-align: center;
+            color:gray;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="wrapper">
+        <center>
+            <h3>Vennligst fyll inn et nytt brukernavn!</h3>
+        </center>
+
+
+        <center>
+            <form action="/" id="addUser"> <!-- submit a username -->
+                <input type="text" name="username" placeholder="Christian er kul">
+                <input id="submitButton" type="submit" value="legg inn brukernavn">
+            </form>
+
+
+            <strong>Legg til alle brukernavn:</strong>
+            <p>{{.}}</p>
+            <p>{{.}}</p>
+            <p>{{.}}</p>
+            <p>{{.}}</p>
+            <p>{{.}}</p>
+        </center>
+    </div>
+    <div id="footer">
+        <em>.. Et system for å ta vare på brukernavn av<span style="color:lightgray"> big guys only</span></em>
+    </div>
+</body>
+</html>
