@@ -65,7 +65,7 @@ func main() {
 		r.HTML(400, "apiUsernames", JsonRW.GetAmountOfUsername())
 	})
 
-	m.RunOnAddr(":80")
+	m.RunOnAddr(":8080")
 	m.Run()
 }
 
