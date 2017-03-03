@@ -74,4 +74,13 @@ func GetRawJsonFile() string {
 
 }
 
+func GetAmountOfUsername() int {
+	result := 0
+	for _, member := range ReadEntireJson() {
+		fmt.Println(member["name"])
+		result = result + 1
+	}
+	fmt.Println(result)
+	return result
+}
 

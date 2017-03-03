@@ -31,9 +31,13 @@ func main() {
 	})
 
 
-
 	m.Get("/members", func(r render.Render) {
-		r.HTML(2000, "members", JsonRW.ReadEntireJson())
+		r.HTML(200, "header", "")
+		for _, member := range JsonRW.ReadEntireJson() {
+			r.HTML(200, "main", member["name"] + " - IP:  " + member["ip"])
+		}
+
+		r.HTML(200, "footer", "")
 	})
 
 		// https://api.ipify.org
@@ -54,6 +58,11 @@ func main() {
 	m.Get("/api/member/json", func(r render.Render) {
 		fmt.Println(JsonRW.GetRawJsonFile())
 		r.HTML(400, "apiUsernames", JsonRW.GetRawJsonFile())
+	})
+
+	m.Get("/api/member/amountName", func(r render.Render) {
+		fmt.Println(JsonRW.GetAmountOfUsername())
+		r.HTML(400, "apiUsernames", JsonRW.GetAmountOfUsername())
 	})
 
 	m.Run()
