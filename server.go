@@ -51,21 +51,63 @@ func main() {
 		x.HTML(200, "hello", "" + text + " is added to the list.")
 	})
 
-	m.Get("/api/member/filesize", func() string {
+
+	// api's
+	m.Get("/api/data/filesize", func() string {
 		return fmt.Sprintf("%d", GetCurrentFileSize())
 	})
 
-	m.Get("/api/member/json", func(r render.Render) {
+	m.Get("/api/data/json", func(r render.Render) {
 		fmt.Println(JsonRW.GetRawJsonFile())
-		r.HTML(400, "apiUsernames", JsonRW.GetRawJsonFile())
+		r.HTML(200, "apiUsernames", JsonRW.GetRawJsonFile())
 	})
 
-	m.Get("/api/member/amountName", func(r render.Render) {
+	m.Get("/api/data/amountName", func(r render.Render) {
 		fmt.Println(JsonRW.GetAmountOfUsername())
-		r.HTML(400, "apiUsernames", JsonRW.GetAmountOfUsername())
+		r.HTML(200, "apiUsernames", JsonRW.GetAmountOfUsername())
 	})
 
-	m.RunOnAddr("0.0.0.0:8080")
+	m.Post("/api/runUpdate", func(r *http.Request) {
+		/*
+			Some other host requested this host to update
+		 */
+		fromHost := string(r.FormValue("addr"))			// the requested hosts addr
+
+		// Check if host is authorised to update our data.
+		token := string(r.FormValue("token"))
+		if (token != "someTokenToPreventUnauthoriseUpdateRequest") {
+			return
+		}
+
+		// check if requesting host have a bigger file
+		hostFileSize, err :=  http.Get(fromHost + "/api/data/filesize")
+		if err == nil {
+			//error
+			return
+		}
+		if (hostFileSize < GetCurrentFileSize()) {
+			// if current file size is higher.. do nothing, and request the host to update their file.
+			// TO DO, REQUEST HOST.
+			return
+		}
+
+		// okay, server got a file with less data than the other host.. we gotta grab that instead.
+		readAPi, err := http.Get(fromHost + "/api/data/json")
+		if err == nil {
+			//error
+			return
+		}
+		bytes, err := ioutil.ReadAll(readAPi)
+		if err == nil {
+			//error
+			return
+		}
+		// write to file
+		ioutil.WriteFile("output1.json", bytes, 0644)
+	})
+
+
+	m.RunOnAddr(":8080")
 	m.Run()
 }
 
