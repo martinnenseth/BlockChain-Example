@@ -9,10 +9,10 @@ import (
 	"io"
 	"os"
 )
-type members []map[string]string
+type Members []map[string]string
 
 func WriteInstance(name string, ip string) {
-	var data members
+	var data Members
 
 	jsonFile, err := ioutil.ReadFile("output1.json")
 	if err != nil {
@@ -37,10 +37,10 @@ func WriteInstance(name string, ip string) {
 /*
  * Decodes the json file and prints its content.
  */
-func ReadEntireJson ()  members{
+func ReadEntireJson ()  Members{
 	jsonFile, _ := os.Open("output1.json")
 
-	var u members
+	var u Members
 
 	dec := json.NewDecoder(jsonFile)
 	for {
@@ -53,12 +53,25 @@ func ReadEntireJson ()  members{
 		}
 
 	}
-	for member := range u {
-		fmt.Printf("name: %s", u[member]["name"])
+	for _, member := range u{
+
+		fmt.Printf("name: %s", member["name"])
 
 	}
 	return u
 }
 
+
+func GetRawJsonFile() string {
+	filename := "output1.json"
+	b, err := ioutil.ReadFile(filename) // just pass the file name
+	if err != nil {
+		fmt.Print(err)
+	}
+
+	return string(b)
+
+
+}
 
 

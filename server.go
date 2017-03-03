@@ -7,20 +7,33 @@ import (
 	"./JsonRW"
 
 	"io/ioutil"
+	"os"
+	"log"
+	"fmt"
 )
 
 func main() {
 
 	m := martini.Classic()
 	// render html templates from templates directory
-	m.Use(render.Renderer())
+
+
+
+
+	m.Use(render.Renderer(render.Options{
+		IndentJSON: false, // Output human readable JSON
+
+	}))
 
 	m.Get("/", func(r render.Render) {
 		r.HTML(200, "hello", "")
+
 	})
 
+
+
 	m.Get("/members", func(r render.Render) {
-		r.HTML(200, "members", "her kommer medlemmer..")
+		r.HTML(2000, "members", JsonRW.ReadEntireJson())
 	})
 
 		// https://api.ipify.org
@@ -30,13 +43,36 @@ func main() {
 		bytes, _ := ioutil.ReadAll(readApi.Body)
 
 		JsonRW.WriteInstance(text, string(bytes))
-		JsonRW.ReadEntireJson()
+
 		x.HTML(200, "hello", "" + text + " is added to the list.")
 	})
+
+	m.Get("/api/member/filesize", func() string {
+		return fmt.Sprintf("%d", GetCurrentFileSize())
+	})
+
+	m.Get("/api/member/json", func(r render.Render) {
+		fmt.Println(JsonRW.GetRawJsonFile())
+		r.HTML(400, "apiUsernames", JsonRW.GetRawJsonFile())
+	})
+
 	m.Run()
 }
 
+func GetCurrentFileSize() int64 {
+	file, err := os.Open("output1.json")
 
+	if err != nil {
+		log.Fatal(err)
+	}
+	fi, err := file.Stat()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	file.Close()
+	return fi.Size()
+}
 
 
 
