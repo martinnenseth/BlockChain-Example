@@ -10,6 +10,7 @@ import (
 	"os"
 	"log"
 	"fmt"
+	"strconv"
 )
 
 func main() {
@@ -81,11 +82,17 @@ func main() {
 
 		// check if requesting host have a bigger file
 		hostFileSize, err :=  http.Get(fromHost + "/api/data/filesize")
+
 		if err == nil {
 			//error
 			return
 		}
-		if (hostFileSize < GetCurrentFileSize()) {
+		i, err := strconv.ParseInt(hostFileSize, 10, 64)
+		if err != nil {
+			panic(err)
+		}
+
+		if (i < GetCurrentFileSize()) {
 			// if current file size is higher.. do nothing, and request the host to update their file.
 			// TO DO, REQUEST HOST.
 			return
