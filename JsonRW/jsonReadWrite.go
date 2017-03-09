@@ -84,3 +84,20 @@ func GetAmountOfUsername() int {
 	return result
 }
 
+func GetAllIPs() []string {
+	var ip_list []string
+
+	for _, member := range ReadEntireJson() {
+		duplicate := false
+		for _, ip := range ip_list {
+			if ip == member["ip"] {
+				duplicate = true
+			}
+		}
+		if !duplicate {
+			ip_list = append(ip_list, member["ip"])
+		}
+	}
+
+	return ip_list
+}
