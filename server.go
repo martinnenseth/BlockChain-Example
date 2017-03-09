@@ -187,7 +187,7 @@ func SendUpdateRequests() {
 			}
 			//resp_string, err := ioutil.ReadAll(resp.Body)
 			//println(string(resp_string))
-			break
+			
 		}
 	}
 }
