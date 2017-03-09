@@ -152,19 +152,22 @@ func SendUpdateRequests() {
 	host_ip := string(bytes)
 
 	// for each server in our server list
+	hc := http.Client{}
+	form := url.Values{}
+	form.Add("addr", host_ip)
+	form.Add("token", "someTokenToPreventUnauthoriseUpdateRequest")
 	for _, ip := range servers {
 		if ip != host_ip {
-			hc := http.Client{}
-			form := url.Values{}
-			form.Add("addr", host_ip)
-			form.Add("token", "someTokenToPreventUnauthoriseUpdateRequest")
-
 			url := ip + "/api/runUpdate"
-			req, _ := http.NewRequest("POST", url, strings.NewReader(form.Encode()))
+			req, err := http.NewRequest("POST", url, strings.NewReader(form.Encode()))
+			if err != nil {
+				println(err)
+				log.Fatal(err)
+			}
 			req.PostForm = form
 			req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-
 			resp, err := hc.Do(req)
+
 			if err != nil {
 				println(err)
 				log.Fatal(err)
