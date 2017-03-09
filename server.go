@@ -13,6 +13,7 @@ import (
 
 	"strconv"
 	"bytes"
+
 )
 
 func main() {
@@ -84,18 +85,21 @@ func main() {
 		// Check if host is authorised to update our data.
 		token := string(r.FormValue("token"))
 		if token != "someTokenToPreventUnauthoriseUpdateRequest" {
-			return nil
+			return ""
 		}
 
 		// check if requesting host have a bigger file
 		hostFileSize, err :=  http.Get(fromHost + "/api/data/filesize")
 		if err == nil {
 			//error
-			return nil
+			return ""
 		}
 
 		// parse hostFileSize over to int...
-		host_file_size, err := strconv.ParseInt(string(hostFileSize.Body), 10, 64)
+		
+		byte_hostfile_size, err := ioutil.ReadAll(hostFileSize.Body)
+		
+		host_file_size, err := strconv.ParseInt(string(byte_hostfile_size), 10, 64)
 
 		if err != nil {
 			log.Fatal(err)
