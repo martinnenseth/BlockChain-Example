@@ -163,7 +163,7 @@ func SendUpdateRequests() {
 	host_ip := string(bytes)
 
 	// for each server in our server list
-	hc := http.Client{}
+	hc := http.Client{Timeout: 20}
 	form := url.Values{}
 	form.Add("addr", "http://"+host_ip+":8080")
 	form.Add("token", "someTokenToPreventUnauthoriseUpdateRequest")
@@ -171,9 +171,9 @@ func SendUpdateRequests() {
 		if ip != host_ip {
 			url := "http://" + ip +":8080" + "/api/runUpdate"
 			req, err := http.NewRequest("POST", url, strings.NewReader(form.Encode()))
+
 			if err != nil {
 				println(err)
-				log.Fatal(err)
 			}
 			req.PostForm = form
 			req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
@@ -183,11 +183,10 @@ func SendUpdateRequests() {
 
 			if err != nil {
 				println(err)
-				log.Fatal(err)
 			}
 			//resp_string, err := ioutil.ReadAll(resp.Body)
 			//println(string(resp_string))
-			
+
 		}
 	}
 }
