@@ -12,7 +12,6 @@ import (
 	"fmt"
 
 	"strconv"
-	"bytes"
 
 	"net/url"
 	"strings"
@@ -89,7 +88,9 @@ func main() {
 		***************** REQUEST UPDATE TO UPDATE LOCAL FILE ********************
 		Other hosts use this for quality assurance it's content. #Blockchain love.
 	*/
-	m.Post("/api/runUpdate", func(r *http.Request, x *bytes.Buffer) string {
+	m.Post("/api/runUpdate", func(r *http.Request) string {
+
+		println("Update request recived")
 
 		// get the IP from the requester
 		fromHost := string(r.FormValue("addr"))
@@ -99,15 +100,24 @@ func main() {
 		// Check if host is authorised to update our data.
 		if token != "someTokenToPreventUnauthoriseUpdateRequest" {return "bad token"}
 
+		println("token accepted")
+
 		// check if requesting host have a bigger file
 		hostFileSize, err :=  http.Get(fromHost + "/api/data/filesize")
-		if err == nil {log.Fatal(err)}
+		println(fromHost + "/api/data/filesize")
 
+		if err != nil {
+			println("error")
+			log.Fatal(err)
+		}
+		println("Get's requesters filesize")
 		// parse hostFileSize over to int...
 		byte_host_file_size, err := ioutil.ReadAll(hostFileSize.Body)
+		println("parsing hostfile size to int")
 		int_host_file_size, err := strconv.ParseInt(string(byte_host_file_size), 10, 64)
 		if err != nil {log.Fatal(err)}
 
+		println("Host file size converted to int, and now beeing compared")
 		// if the current file size is larger, we do not wanna do anything..
 		// .. instead we send the request back to the requesting host.
 		if int_host_file_size < GetCurrentFileSize() {
@@ -115,6 +125,7 @@ func main() {
 			return "our data is newer, i'll send your request back."
 
 		} else if int_host_file_size == GetCurrentFileSize() {
+			println("data is the same")
 			return "data is the same"
 		}
 
@@ -154,11 +165,11 @@ func SendUpdateRequests() {
 	// for each server in our server list
 	hc := http.Client{}
 	form := url.Values{}
-	form.Add("addr", host_ip)
+	form.Add("addr", "http://"+host_ip+":8080")
 	form.Add("token", "someTokenToPreventUnauthoriseUpdateRequest")
 	for _, ip := range servers {
 		if ip != host_ip {
-			url := ip + "/api/runUpdate"
+			url := "http://" + ip +":8080" + "/api/runUpdate"
 			req, err := http.NewRequest("POST", url, strings.NewReader(form.Encode()))
 			if err != nil {
 				println(err)
@@ -168,11 +179,15 @@ func SendUpdateRequests() {
 			req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 			resp, err := hc.Do(req)
 
+			print(resp)
+
 			if err != nil {
 				println(err)
 				log.Fatal(err)
 			}
-			println(resp)
+			//resp_string, err := ioutil.ReadAll(resp.Body)
+			//println(string(resp_string))
+			break
 		}
 	}
 }
