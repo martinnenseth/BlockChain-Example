@@ -14,6 +14,8 @@ import (
 	"strconv"
 	"bytes"
 
+	"net/url"
+	"strings"
 )
 
 func main() {
@@ -41,7 +43,7 @@ func main() {
 		bytes, _ := ioutil.ReadAll(readApi.Body)
 
 		JsonRW.WriteInstance(text, string(bytes))
-
+		SendUpdateRequests()
 		x.HTML(200, "hello", "" + text + " is added to the list.")
 	})
 
@@ -113,7 +115,6 @@ func main() {
 			return "our data is newer, i'll send your request back."
 
 		} else if int_host_file_size == GetCurrentFileSize() {
-
 			return "data is the same"
 		}
 
@@ -136,25 +137,44 @@ func main() {
 	m.Run()
 }
 
+/*
+	For sending out update requests to other hosts in the network.
+ */
 func SendUpdateRequests() {
+	// collect list of servers, based on the json file with usernames..
 	servers := JsonRW.GetAllIPs()
 
+	// get our ip..
 	readApi, err := http.Get("https://api.ipify.org")
 	if err != nil {log.Fatal(err)}
-
 	bytes, err := ioutil.ReadAll(readApi.Body)
 	if err != nil {log.Fatal(err)}
-
 	host_ip := string(bytes)
 
+	// for each server in our server list
 	for _, ip := range servers {
 		if ip != host_ip {
-			// send ip request here..
+			hc := http.Client{}
+			form := url.Values{}
+			form.Add("addr", host_ip)
+			form.Add("token", "someTokenToPreventUnauthoriseUpdateRequest")
+
+			url := ip + "/api/runUpdate"
+			req, _ := http.NewRequest("POST", url, strings.NewReader(form.Encode()))
+			req.PostForm = form
+			req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+			resp, err := hc.Do(req)
+			if err != nil {
+				println(err)
+				log.Fatal(err)
+			}
+			println(resp)
 		}
 	}
 }
 
-/**
+/*
 	get current size of json file.
  */
 func GetCurrentFileSize() int64 {
