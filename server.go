@@ -78,34 +78,35 @@ func main() {
 	m.Post("/api/runUpdate", func(r *http.Request, x *bytes.Buffer) string {
 		/*
 			Some other host requested this host to update
-		*/
+		 */
+		fromHost := string(r.FormValue("addr"))			// the requested hosts addr
 
-		// get parameters
-		fromHost := string(r.FormValue("addr"))		// the ip that sent the request
-		token := string(r.FormValue("token"))		// token for requesting update
-
-		if (token != "someTokenToPreventUnauthoriseUpdateRequest") {
-			// not authorised for requesting update
-			return "Token not valid"
-
+		// Check if host is authorised to update our data.
+		token := string(r.FormValue("token"))
+		if token != "someTokenToPreventUnauthoriseUpdateRequest" {
+			return nil
 		}
 
 		// check if requesting host have a bigger file
 		hostFileSize, err :=  http.Get(fromHost + "/api/data/filesize")
-		if err != nil {log.Fatal(err)}
+		if err == nil {
+			//error
+			return nil
+		}
 
-		bytes, err := ioutil.ReadAll(hostFileSize.Body)
-		if err != nil {log.Fatal(err)}
+		// parse hostFileSize over to int...
+		host_file_size, err := strconv.ParseInt(string(hostFileSize.Body), 10, 64)
 
-		i, err := strconv.ParseInt(string(bytes), 10, 64)
-		if err != nil {log.Fatal(err)}
+		if err != nil {
+			log.Fatal(err)
+		}
 
-		if i < GetCurrentFileSize() {
+		if host_file_size < GetCurrentFileSize() {
 			// if current file size is higher.. do nothing, and request the host to update their file.
 			// TO DO, REQUEST HOST.
 			return "our data is newer, i'll send your request back."
 
-		} else if i == GetCurrentFileSize() {
+		} else if host_file_size == GetCurrentFileSize() {
 			return "data is the same"
 		}
 
