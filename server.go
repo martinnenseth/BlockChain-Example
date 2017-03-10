@@ -51,7 +51,7 @@ func main() {
 	 */
 	m.Get("/members", func(r render.Render) {
 		r.HTML(200, "header", "")
-
+		r.HTML(200, "header-text", "Members we have collected so far")
 		// for each member in our json file
 		for _, member := range JsonRW.ReadEntireJson() {
 			r.HTML(200, "main", member["name"] + " - IP:  " + member["ip"])
@@ -64,7 +64,10 @@ func main() {
 	 */
 	m.Get("/servers", func(r render.Render){
 		r.HTML(200, "header", "")
-		r.HTML(200, "main", "404: It's not the size of the guy that matters, it's the loyalty of his guns..")
+		r.HTML(200, "header-text", "Servers that have added usernames")
+		for _, ip := range JsonRW.GetAllIPs() {
+			r.HTML(200, "main", ip)
+		}
 		r.HTML(200, "footer", "")
 	})
 
@@ -144,7 +147,7 @@ func main() {
 	})
 
 
-	m.RunOnAddr(":8080")
+	m.RunOnAddr(":5050")
 	m.Run()
 }
 
