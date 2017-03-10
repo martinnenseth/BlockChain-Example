@@ -11,6 +11,9 @@ import (
 )
 type Members []map[string]string
 
+/**
+	Write a new instance to json file.
+ */
 func WriteInstance(name string, ip string) {
 	var data Members
 
@@ -61,7 +64,9 @@ func ReadEntireJson ()  Members{
 	return u
 }
 
-
+/**
+	return a raw json file in string variable.
+ */
 func GetRawJsonFile() string {
 	filename := "output1.json"
 	b, err := ioutil.ReadFile(filename) // just pass the file name
@@ -73,7 +78,9 @@ func GetRawJsonFile() string {
 
 
 }
-
+/**
+	return a number of usernames in out list.
+ */
 func GetAmountOfUsername() int {
 	result := 0
 	for _, member := range ReadEntireJson() {
@@ -83,7 +90,9 @@ func GetAmountOfUsername() int {
 	fmt.Println(result)
 	return result
 }
-
+/**
+	return a list of usernames.
+ */
 func GetAllIPs() []string {
 	var ip_list []string
 

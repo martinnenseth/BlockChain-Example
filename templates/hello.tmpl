@@ -13,7 +13,14 @@
 
     <script>
     $(document).ready(function () {
+        $('body').hide();
+        $('body').fadeIn();
 
+        $('#big').mouseover(function () {
+            $(this).css("font-size", "19px");
+        }).mouseout(function () { // resets
+            $(this).css("font-size", "16px");
+        });
 
     })
     </script>
@@ -89,7 +96,7 @@
         </center>
     </div>
     <div id="footer">
-        <em>.. A system to store usernames, delivered by <span style="color:lightblue"> Big Guys Only</span></em>
+        <em>.. A system to store usernames, delivered by <span id="big" style="color:lightblue;"> Big Guys Only</span></em>
     </div>
 </body>
 </html>

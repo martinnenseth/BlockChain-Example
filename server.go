@@ -19,9 +19,17 @@ func main() {
 
 	m := martini.Classic()
 
+
 	m.Use(render.Renderer(render.Options{
 		IndentJSON: true, // Output human readable JSON
 	}))
+
+	m.NotFound(func(r render.Render) {
+		r.HTML(200, "header", "")
+		r.HTML(200, "header-text", "404...")
+		r.HTML(200, "main", "Siden eksisterer ikke.")
+		r.HTML(200, "footer", "")
+	})
 
 	/*
 		Our index page.
@@ -148,7 +156,7 @@ func main() {
 	})
 
 
-	m.RunOnAddr(":5050")
+	m.RunOnAddr(":8080")
 	m.Run()
 
 
