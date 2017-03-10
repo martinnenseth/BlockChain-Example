@@ -2,6 +2,7 @@
 
 ## About
 A disributed list application implemented in GoLang. 
+<br>
 <b> How it works </b> <br>
 1. A client node inserts a username (and IP, but this is automated, <it> see line 42 in server.go </it>) into a json file on a host node. 
 <br>
