@@ -15,6 +15,7 @@ import (
 
 	"net/url"
 	"strings"
+	"time"
 )
 
 func main() {
@@ -102,6 +103,7 @@ func main() {
 
 		println("token accepted")
 
+
 		// check if requesting host have a bigger file
 		hostFileSize, err :=  http.Get(fromHost + "/api/data/filesize")
 		println(fromHost + "/api/data/filesize")
@@ -118,6 +120,7 @@ func main() {
 		if err != nil {log.Fatal(err)}
 
 		println("Host file size converted to int, and now beeing compared")
+
 		// if the current file size is larger, we do not wanna do anything..
 		// .. instead we send the request back to the requesting host.
 		if int_host_file_size < GetCurrentFileSize() {
@@ -210,7 +213,21 @@ func GetCurrentFileSize() int64 {
 	return fi.Size()
 }
 
+func GetLastEditTime() time.Time {
+	file, err := os.Open("output1.json")
+	if err != nil {
+		log.Fatal(err)
+	}
 
+	fi, err := file.Stat()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	file.Close()
+	// Return the time of when the file was last modified.
+	return fi.ModTime()
+}
 
 
 
