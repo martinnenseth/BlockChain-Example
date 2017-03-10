@@ -48,6 +48,9 @@ func main() {
 		Render all the usernames we have collected so far.
 	 */
 	m.Get("/members", func(r render.Render) {
+		// To force check that the node got the latest file, send update request
+		SendUpdateRequests()
+
 		r.HTML(200, "header", "")
 		r.HTML(200, "header-text", "Members we have collected so far")
 		// for each member in our json file
@@ -147,12 +150,17 @@ func main() {
 
 	m.RunOnAddr(":5050")
 	m.Run()
+
+
 }
 
 /*
 	For sending out update requests to other hosts in the network.
  */
 func SendUpdateRequests() {
+
+	println("Sending update request to other nodes..")
+
 	// collect list of servers, based on the json file with usernames..
 	servers := JsonRW.GetAllIPs()
 
@@ -170,6 +178,7 @@ func SendUpdateRequests() {
 	form.Add("token", "someTokenToPreventUnauthoriseUpdateRequest")
 	for _, ip := range servers {
 		if ip != host_ip {
+			println("Sending update request for " + ip)
 			url := "http://" + ip +":8080" + "/api/runUpdate"
 			req, err := http.NewRequest("POST", url, strings.NewReader(form.Encode()))
 
