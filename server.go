@@ -9,7 +9,6 @@ import (
 	"os"
 	"log"
 	"fmt"
-	"strconv"
 	"net/url"
 	"strings"
 	"time"
@@ -129,33 +128,37 @@ func main() {
 		println("token accepted")
 
 
-		// check if requesting host have a bigger file
-		hostFileSize, err :=  http.Get(fromHost + "/api/data/filesize")
-		println(fromHost + "/api/data/filesize")
-
+		// get requested hosts last file update
+		requested_host_file_date, err := http.Get(fromHost + "/api/data/fileLastEdited")
 		if err != nil {
-			println("error")
-			log.Fatal(err)
+			println("error retriving last edit date from requested host" + err.Error())
+			return "error retriving last edit date from requested host"
 		}
-		println("Get's requesters filesize")
-		// parse hostFileSize over to int...
-		byte_host_file_size, err := ioutil.ReadAll(hostFileSize.Body)
-		println("parsing hostfile size to int")
-		int_host_file_size, err := strconv.ParseInt(string(byte_host_file_size), 10, 64)
-		if err != nil {log.Fatal(err)}
+		println("requested file date recived..")
 
-		println("Host file size converted to int, and now beeing compared")
+		api_read, err := ioutil.ReadAll(requested_host_file_date.Body)
+		if err != nil {
+			println("Could not read API" + err.Error())
+			return "Could not read API"
+		}
+		file_date_remote, err := time.Parse("2017-03-11 21:55:15 +0100 CET", string(api_read))
+		if err != nil {
+			println("Could not parse timedate " + err.Error())
+			return "Could not parse timedate"
+		}
 
-		// if the current file size is larger, we do not wanna do anything..
-		// .. instead we send the request back to the requesting host.
-		if int_host_file_size < getCurrentFileSize() {
+		println("Comparing dates.. ")
+
+		if file_date_remote.Before(getLastEditTime()){
+			// our file is newer.. send the request back.
 			SendUpdateRequests()
-			return "our data is newer, i'll send your request back."
-
-		} else if int_host_file_size == getCurrentFileSize() {
-			println("data is the same")
-			return "data is the same"
+			return "Request sent back. reason: newer file spotted."
+		}else if file_date_remote.Equal(getLastEditTime()) {
+			// file is the same
+			return "Request denied. File date the same.."
 		}
+
+		println("Old file spotted, changing the file..")
 
 		// okay, we got a file with less data than the other host..
 		// .. we grab that instead.
