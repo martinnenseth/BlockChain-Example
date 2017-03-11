@@ -237,6 +237,10 @@ func getCurrentFileSize() int64 {
 	return fi.Size()
 }
 
+/**
+	gets the ip from a api.
+	@return a string containing of the ip of the host
+ */
 func getServerIP() string{
 	readApi, err := http.Get("https://api.ipify.org")
 	if err != nil {log.Fatal(err)}
@@ -244,11 +248,16 @@ func getServerIP() string{
 	if err != nil {log.Fatal(err)}
 	return string(bytes)
 }
+
+/**
+	this method will run over ever.. and only used when a routine...
+	send update request every 5 minutes..
+ */
 func runUpdateEveryFiveMinute(){
+	time.Sleep(20 * time.Second) // to skip update request while the web-server boots up.
 	for true {
-		time.Sleep(1 * time.Minute)
 		SendUpdateRequests()
-		time.Sleep(4 * time.Minute)
+		time.Sleep(5 * time.Minute)
 	}
 }
 
