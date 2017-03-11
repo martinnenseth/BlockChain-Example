@@ -10,12 +10,12 @@
     <script type = "text/javascript"
             src = "https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
 
-
     <script>
-    $(document).ready(function () {
+        $(document).ready(function () {
+            $('body').hide();
+            $('body').fadeIn();
 
-
-    })
+        })
     </script>
 
     <style>
@@ -52,7 +52,7 @@
             text-align: center;
             color:white;
         }
-        a:link, a:visited {
+        #menu a:link, #menu a:visited {
             background-color: lightblue;
             color: black;
             padding: 14px 25px;
@@ -61,18 +61,16 @@
             display: inline-block;
         }
 
-        a:hover, a:active {
+        #menu a:hover, #menu a:active {
             background-color: white;
         }
     </style>
 </head>
 <body>
 <div id="menu">
-    <a href="/">Home</a> <a href="/members">Usernames</a> <a href="/servers">Servers</a>
+    <a href="/">Home</a> <a href="/members">Usernames</a> <a href="/servers">Servers</a> <a href="/api">api</a>
 </div>
 <div id="wrapper">
     <center>
-        <h3>Usernames we've collected so far</h3>
-    </center>
 
 

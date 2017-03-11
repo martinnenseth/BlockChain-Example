@@ -5,26 +5,33 @@ import (
 	"github.com/martini-contrib/render"
 	"net/http"
 	"./JsonRW"
-
 	"io/ioutil"
 	"os"
 	"log"
 	"fmt"
-
 	"strconv"
-
 	"net/url"
 	"strings"
 	"time"
 )
 
+
 func main() {
 
 	m := martini.Classic()
 
+
 	m.Use(render.Renderer(render.Options{
 		IndentJSON: true, // Output human readable JSON
 	}))
+
+
+	m.NotFound(func(r render.Render) {
+		r.HTML(200, "header", "")
+		r.HTML(200, "header-text", "404...")
+		r.HTML(200, "main", "Siden eksisterer ikke.")
+		r.HTML(200, "footer", "")
+	})
 
 	/*
 		Our index page.
@@ -39,10 +46,7 @@ func main() {
 	 */
 	m.Post("/", func(r *http.Request, x render.Render)  {
 		text := string(r.FormValue("username"))
-		readApi, _ := http.Get("https://api.ipify.org")
-		bytes, _ := ioutil.ReadAll(readApi.Body)
-
-		JsonRW.WriteInstance(text, string(bytes))
+		JsonRW.WriteInstance(text, getServerIP())
 		SendUpdateRequests()
 		x.HTML(200, "hello", "" + text + " is added to the list.")
 	})
@@ -52,7 +56,7 @@ func main() {
 	 */
 	m.Get("/members", func(r render.Render) {
 		r.HTML(200, "header", "")
-
+		r.HTML(200, "header-text", "Members we have collected so far")
 		// for each member in our json file
 		for _, member := range JsonRW.ReadEntireJson() {
 			r.HTML(200, "main", member["name"] + " - IP:  " + member["ip"])
@@ -65,7 +69,24 @@ func main() {
 	 */
 	m.Get("/servers", func(r render.Render){
 		r.HTML(200, "header", "")
-		r.HTML(200, "main", "404: It's not the size of the guy that matters, it's the loyalty of his guns..")
+		r.HTML(200, "header-text", "Servers that have added usernames")
+		for _, ip := range JsonRW.GetAllIPs() {
+			r.HTML(200, "main", ip)
+		}
+		r.HTML(200, "footer", "")
+	})
+
+	/**
+		Gets a list of api addr.
+	 */
+	m.Get("/api", func (r render.Render) {
+		r.HTML(200, "header", "")
+		r.HTML(200, "header-text", "Lists of all api's")
+		for _, x := range m.All() {
+			if strings.HasPrefix(x.Pattern(), "/api/data") {
+				r.HTML(200, "links", x.Pattern())
+			}
+		}
 		r.HTML(200, "footer", "")
 	})
 
@@ -73,7 +94,7 @@ func main() {
 		API's for file size, json raw file and all of the account names.
 	 */
 	m.Get("/api/data/filesize", func() string {
-		return fmt.Sprintf("%d", GetCurrentFileSize())
+		return fmt.Sprintf("%d", getCurrentFileSize())
 	})
 	m.Get("/api/data/json", func(r render.Render) {
 		fmt.Println(JsonRW.GetRawJsonFile())
@@ -123,11 +144,11 @@ func main() {
 
 		// if the current file size is larger, we do not wanna do anything..
 		// .. instead we send the request back to the requesting host.
-		if int_host_file_size < GetCurrentFileSize() {
+		if int_host_file_size < getCurrentFileSize() {
 			SendUpdateRequests()
 			return "our data is newer, i'll send your request back."
 
-		} else if int_host_file_size == GetCurrentFileSize() {
+		} else if int_host_file_size == getCurrentFileSize() {
 			println("data is the same")
 			return "data is the same"
 		}
@@ -137,6 +158,7 @@ func main() {
 		readAPi, err := http.Get(fromHost + "/api/data/json")
 		if err != nil {log.Fatal(err)}
 		jsonByte, err := ioutil.ReadAll(readAPi.Body)
+
 		if err != nil {log.Fatal(err)}
 
 		// write to file
@@ -146,24 +168,27 @@ func main() {
 
 	})
 
+	// starts a thread running every five minutes that checks for updates..
+	go runUpdateEveryFiveMinute()
 
 	m.RunOnAddr(":8080")
 	m.Run()
+
+
 }
 
 /*
 	For sending out update requests to other hosts in the network.
  */
 func SendUpdateRequests() {
+
+	println("Sending update request to other nodes..")
+
 	// collect list of servers, based on the json file with usernames..
 	servers := JsonRW.GetAllIPs()
 
 	// get our ip..
-	readApi, err := http.Get("https://api.ipify.org")
-	if err != nil {log.Fatal(err)}
-	bytes, err := ioutil.ReadAll(readApi.Body)
-	if err != nil {log.Fatal(err)}
-	host_ip := string(bytes)
+	host_ip := getServerIP()
 
 	// for each server in our server list
 	hc := http.Client{Timeout: 20}
@@ -172,6 +197,7 @@ func SendUpdateRequests() {
 	form.Add("token", "someTokenToPreventUnauthoriseUpdateRequest")
 	for _, ip := range servers {
 		if ip != host_ip {
+			println("Sending update request for " + ip)
 			url := "http://" + ip +":8080" + "/api/runUpdate"
 			req, err := http.NewRequest("POST", url, strings.NewReader(form.Encode()))
 
@@ -197,7 +223,7 @@ func SendUpdateRequests() {
 /*
 	get current size of json file.
  */
-func GetCurrentFileSize() int64 {
+func getCurrentFileSize() int64 {
 	file, err := os.Open("output1.json")
 
 	if err != nil {
@@ -213,13 +239,13 @@ func GetCurrentFileSize() int64 {
 	return fi.Size()
 }
 
+
 func GetLastEditTime() time.Time {
 	file, err := os.Open("output1.json")
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	fi, err := file.Stat()
+  fi, err := file.Stat()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -228,6 +254,32 @@ func GetLastEditTime() time.Time {
 	// Return the time of when the file was last modified.
 	return fi.ModTime()
 }
+
+/**
+	gets the ip from a api.
+	@return a string containing of the ip of the host
+ */
+func getServerIP() string{
+	readApi, err := http.Get("https://api.ipify.org")
+	if err != nil {log.Fatal(err)}
+	bytes, err := ioutil.ReadAll(readApi.Body)
+	if err != nil {log.Fatal(err)}
+	return string(bytes)
+}
+
+/**
+	this method will run over ever.. and only used when a routine...
+	send update request every 5 minutes..
+ */
+func runUpdateEveryFiveMinute(){
+	time.Sleep(20 * time.Second) // to skip update request while the web-server boots up.
+	for true {
+		SendUpdateRequests()
+		time.Sleep(5 * time.Minute)
+	}
+}
+
+	
 
 
 
