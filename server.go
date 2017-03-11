@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"net/url"
 	"strings"
+	"time"
 )
 
 
@@ -54,9 +55,6 @@ func main() {
 		Render all the usernames we have collected so far.
 	 */
 	m.Get("/members", func(r render.Render) {
-		// To force check that the node got the latest file, send update request
-		SendUpdateRequests()
-
 		r.HTML(200, "header", "")
 		r.HTML(200, "header-text", "Members we have collected so far")
 		// for each member in our json file
@@ -96,7 +94,7 @@ func main() {
 		API's for file size, json raw file and all of the account names.
 	 */
 	m.Get("/api/data/filesize", func() string {
-		return fmt.Sprintf("%d", GetCurrentFileSize())
+		return fmt.Sprintf("%d", getCurrentFileSize())
 	})
 	m.Get("/api/data/json", func(r render.Render) {
 		fmt.Println(JsonRW.GetRawJsonFile())
@@ -144,11 +142,11 @@ func main() {
 		println("Host file size converted to int, and now beeing compared")
 		// if the current file size is larger, we do not wanna do anything..
 		// .. instead we send the request back to the requesting host.
-		if int_host_file_size < GetCurrentFileSize() {
+		if int_host_file_size < getCurrentFileSize() {
 			SendUpdateRequests()
 			return "our data is newer, i'll send your request back."
 
-		} else if int_host_file_size == GetCurrentFileSize() {
+		} else if int_host_file_size == getCurrentFileSize() {
 			println("data is the same")
 			return "data is the same"
 		}
@@ -158,6 +156,7 @@ func main() {
 		readAPi, err := http.Get(fromHost + "/api/data/json")
 		if err != nil {log.Fatal(err)}
 		jsonByte, err := ioutil.ReadAll(readAPi.Body)
+
 		if err != nil {log.Fatal(err)}
 
 		// write to file
@@ -167,6 +166,8 @@ func main() {
 
 	})
 
+	// starts a thread running every five minutes that checks for updates..
+	go runUpdateEveryFiveMinute()
 
 	m.RunOnAddr(":8080")
 	m.Run()
@@ -220,7 +221,7 @@ func SendUpdateRequests() {
 /*
 	get current size of json file.
  */
-func GetCurrentFileSize() int64 {
+func getCurrentFileSize() int64 {
 	file, err := os.Open("output1.json")
 
 	if err != nil {
@@ -243,7 +244,13 @@ func getServerIP() string{
 	if err != nil {log.Fatal(err)}
 	return string(bytes)
 }
-
+func runUpdateEveryFiveMinute(){
+	for true {
+		time.Sleep(1 * time.Minute)
+		SendUpdateRequests()
+		time.Sleep(4 * time.Minute)
+	}
+}
 
 
 
