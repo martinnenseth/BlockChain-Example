@@ -24,6 +24,7 @@ func main() {
 		IndentJSON: true, // Output human readable JSON
 	}))
 
+
 	m.NotFound(func(r render.Render) {
 		r.HTML(200, "header", "")
 		r.HTML(200, "header-text", "404...")
@@ -44,10 +45,7 @@ func main() {
 	 */
 	m.Post("/", func(r *http.Request, x render.Render)  {
 		text := string(r.FormValue("username"))
-		readApi, _ := http.Get("https://api.ipify.org")
-		bytes, _ := ioutil.ReadAll(readApi.Body)
-
-		JsonRW.WriteInstance(text, string(bytes))
+		JsonRW.WriteInstance(text, getServerIP())
 		SendUpdateRequests()
 		x.HTML(200, "hello", "" + text + " is added to the list.")
 	})
@@ -76,6 +74,20 @@ func main() {
 		r.HTML(200, "header-text", "Servers that have added usernames")
 		for _, ip := range JsonRW.GetAllIPs() {
 			r.HTML(200, "main", ip)
+		}
+		r.HTML(200, "footer", "")
+	})
+
+	/**
+		Gets a list of api addr.
+	 */
+	m.Get("/api", func (r render.Render) {
+		r.HTML(200, "header", "")
+		r.HTML(200, "header-text", "Lists of all api's")
+		for _, x := range m.All() {
+			if strings.HasPrefix(x.Pattern(), "/api/") {
+				r.HTML(200, "links", "http://"+getServerIP()+":8080"+string(x.Pattern()))
+			}
 		}
 		r.HTML(200, "footer", "")
 	})
@@ -173,11 +185,7 @@ func SendUpdateRequests() {
 	servers := JsonRW.GetAllIPs()
 
 	// get our ip..
-	readApi, err := http.Get("https://api.ipify.org")
-	if err != nil {log.Fatal(err)}
-	bytes, err := ioutil.ReadAll(readApi.Body)
-	if err != nil {log.Fatal(err)}
-	host_ip := string(bytes)
+	host_ip := getServerIP()
 
 	// for each server in our server list
 	hc := http.Client{Timeout: 20}
@@ -226,6 +234,14 @@ func GetCurrentFileSize() int64 {
 
 	file.Close()
 	return fi.Size()
+}
+
+func getServerIP() string{
+	readApi, err := http.Get("https://api.ipify.org")
+	if err != nil {log.Fatal(err)}
+	bytes, err := ioutil.ReadAll(readApi.Body)
+	if err != nil {log.Fatal(err)}
+	return string(bytes)
 }
 
 
