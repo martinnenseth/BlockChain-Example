@@ -47,7 +47,6 @@
       <root url="file://C:/Go/src/internal" />
       <root url="file://C:/Go/src/expvar" />
     </CLASSES>
-    <JAVADOC />
     <SOURCES>
       <root url="file://C:/Go/src/database" />
       <root url="file://C:/Go/src/strings" />
