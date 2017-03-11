@@ -86,7 +86,7 @@ func main() {
 		r.HTML(200, "header-text", "Lists of all api's")
 		for _, x := range m.All() {
 			if strings.HasPrefix(x.Pattern(), "/api/") {
-				r.HTML(200, "links", "http://"+getServerIP()+":8080"+string(x.Pattern()))
+				r.HTML(200, "links", "http://" + getServerIP() + ":8080" + x.Pattern())
 			}
 		}
 		r.HTML(200, "footer", "")
