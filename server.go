@@ -105,6 +105,10 @@ func main() {
 		r.HTML(200, "apiUsernames", JsonRW.GetAmountOfUsername())
 	})
 
+	m.Get("/api/data/fileLastEdited", func(r render.Render) {
+		r.HTML(200, "apiUsernames", getLastEditTime())
+	})
+
 
 	/*
 		***************** REQUEST UPDATE TO UPDATE LOCAL FILE ********************
@@ -222,6 +226,7 @@ func SendUpdateRequests() {
 
 /*
 	get current size of json file.
+	@return a int64 of the filesize.
  */
 func getCurrentFileSize() int64 {
 	file, err := os.Open("output1.json")
@@ -239,13 +244,16 @@ func getCurrentFileSize() int64 {
 	return fi.Size()
 }
 
-
-func GetLastEditTime() time.Time {
+/**
+	Get the latest edited time of the file.
+	@return time of last edit.
+ */
+func getLastEditTime() time.Time {
 	file, err := os.Open("output1.json")
 	if err != nil {
 		log.Fatal(err)
 	}
-  fi, err := file.Stat()
+	fi, err := file.Stat()
 	if err != nil {
 		log.Fatal(err)
 	}
