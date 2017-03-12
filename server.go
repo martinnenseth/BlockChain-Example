@@ -141,7 +141,7 @@ func main() {
 			println("Could not read API" + err.Error())
 			return "Could not read API"
 		}
-		file_date_remote, err := time.Parse("2017-03-11 21:55:15 +0100 CET", string(api_read))
+		file_date_remote, err := time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", string(api_read))
 		if err != nil {
 			println("Could not parse timedate " + err.Error())
 			return "Could not parse timedate"
