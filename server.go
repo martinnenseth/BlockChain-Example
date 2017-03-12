@@ -9,7 +9,6 @@ import (
 	"os"
 	"log"
 	"fmt"
-	"strconv"
 	"net/url"
 	"strings"
 	"time"
@@ -47,7 +46,7 @@ func main() {
 	m.Post("/", func(r *http.Request, x render.Render)  {
 		text := string(r.FormValue("username"))
 		JsonRW.WriteInstance(text, getServerIP())
-		SendUpdateRequests()
+		go SendUpdateRequests()
 		x.HTML(200, "hello", "" + text + " is added to the list.")
 	})
 
@@ -105,6 +104,10 @@ func main() {
 		r.HTML(200, "apiUsernames", JsonRW.GetAmountOfUsername())
 	})
 
+	m.Get("/api/data/fileLastEdited", func(r render.Render) {
+		r.HTML(200, "apiUsernames", getLastEditTime())
+	})
+
 
 	/*
 		***************** REQUEST UPDATE TO UPDATE LOCAL FILE ********************
@@ -125,33 +128,37 @@ func main() {
 		println("token accepted")
 
 
-		// check if requesting host have a bigger file
-		hostFileSize, err :=  http.Get(fromHost + "/api/data/filesize")
-		println(fromHost + "/api/data/filesize")
-
+		// get requested hosts last file update
+		requested_host_file_date, err := http.Get(fromHost + "/api/data/fileLastEdited")
 		if err != nil {
-			println("error")
-			log.Fatal(err)
+			println("error retriving last edit date from requested host" + err.Error())
+			return "error retriving last edit date from requested host"
 		}
-		println("Get's requesters filesize")
-		// parse hostFileSize over to int...
-		byte_host_file_size, err := ioutil.ReadAll(hostFileSize.Body)
-		println("parsing hostfile size to int")
-		int_host_file_size, err := strconv.ParseInt(string(byte_host_file_size), 10, 64)
-		if err != nil {log.Fatal(err)}
+		println("requested file date recived..")
 
-		println("Host file size converted to int, and now beeing compared")
-
-		// if the current file size is larger, we do not wanna do anything..
-		// .. instead we send the request back to the requesting host.
-		if int_host_file_size < getCurrentFileSize() {
-			SendUpdateRequests()
-			return "our data is newer, i'll send your request back."
-
-		} else if int_host_file_size == getCurrentFileSize() {
-			println("data is the same")
-			return "data is the same"
+		api_read, err := ioutil.ReadAll(requested_host_file_date.Body)
+		if err != nil {
+			println("Could not read API" + err.Error())
+			return "Could not read API"
 		}
+		file_date_remote, err := time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", string(api_read))
+		if err != nil {
+			println("Could not parse timedate " + err.Error())
+			return "Could not parse timedate"
+		}
+
+		println("Comparing dates.. ")
+
+		if file_date_remote.Before(getLastEditTime()){
+			// our file is newer.. send the request back.
+			go SendUpdateRequests()
+			return "Request sent back. reason: newer file spotted."
+		}else if file_date_remote.Equal(getLastEditTime()) {
+			// file is the same
+			return "Request denied. File date the same.."
+		}
+
+		println("Old file spotted, changing the file..")
 
 		// okay, we got a file with less data than the other host..
 		// .. we grab that instead.
@@ -222,6 +229,7 @@ func SendUpdateRequests() {
 
 /*
 	get current size of json file.
+	@return a int64 of the filesize.
  */
 func getCurrentFileSize() int64 {
 	file, err := os.Open("output1.json")
@@ -239,13 +247,16 @@ func getCurrentFileSize() int64 {
 	return fi.Size()
 }
 
-
-func GetLastEditTime() time.Time {
+/**
+	Get the latest edited time of the file.
+	@return time of last edit.
+ */
+func getLastEditTime() time.Time {
 	file, err := os.Open("output1.json")
 	if err != nil {
 		log.Fatal(err)
 	}
-  fi, err := file.Stat()
+	fi, err := file.Stat()
 	if err != nil {
 		log.Fatal(err)
 	}
