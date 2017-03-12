@@ -46,7 +46,7 @@ func main() {
 	m.Post("/", func(r *http.Request, x render.Render)  {
 		text := string(r.FormValue("username"))
 		JsonRW.WriteInstance(text, getServerIP())
-		SendUpdateRequests()
+		go SendUpdateRequests()
 		x.HTML(200, "hello", "" + text + " is added to the list.")
 	})
 
@@ -151,7 +151,7 @@ func main() {
 
 		if file_date_remote.Before(getLastEditTime()){
 			// our file is newer.. send the request back.
-			SendUpdateRequests()
+			go SendUpdateRequests()
 			return "Request sent back. reason: newer file spotted."
 		}else if file_date_remote.Equal(getLastEditTime()) {
 			// file is the same
