@@ -11,6 +11,8 @@ other hosts in our network. The network contains a list of IPs that have at leas
  
 <p> There is also a routine that requests update from the other host every 5 minutes. This goes in a 
 sepeate thread while the application runs. </p>
+
+example:
 ```golang
 func runUpdateEveryFiveMinute(){
 	time.Sleep(20 * time.Second) // to skip update request while the web-server boots up.
@@ -21,11 +23,8 @@ func runUpdateEveryFiveMinute(){
 }
 ```
 <p> With help from golang, we retrived last edited date from the file.. </p>
+
 ```golang
-/**
-	Get the latest edited time of the file.
-	@return time of last edit.
- */
 func getLastEditTime() time.Time {
 	file, err := os.Open("output1.json")
 	if err != nil {
