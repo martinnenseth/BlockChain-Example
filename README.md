@@ -12,7 +12,7 @@ other hosts in our network. The network contains a list of IPs that have at leas
 <p> There is also a routine that requests update from the other host every 5 minutes. This goes in a 
 sepeate thread while the application runs. </p>
 
-example:
+
 ```golang
 func runUpdateEveryFiveMinute(){
 	time.Sleep(20 * time.Second) // to skip update request while the web-server boots up.
@@ -20,9 +20,9 @@ func runUpdateEveryFiveMinute(){
 		SendUpdateRequests()
 		time.Sleep(5 * time.Minute)
 	}
-} 
+}
 ```
-<p> With help from golang, we retrived last edited date from the file.. </p>
+For retriving a file latest modifiy date, we used file.Stat()'s ModTime to get out the date..
 
 ```golang
 func getLastEditTime() time.Time {
@@ -40,16 +40,32 @@ func getLastEditTime() time.Time {
 	return fi.ModTime()
 }
 ```
-<p> And with a coded API, we can retrive a remote servers's files modified date, and by that we can use that data to find out if a servers file is outdated or not. 
-</p>
+.. So the modify date can be collected from remote, we needed a API.
+
 ```golang
 m.Get("/api/data/fileLastEdited", func(r render.Render) {
-		r.HTML(200, "apiUsernames", getLastEditTime())
-	})
+	r.HTML(200, "apiUsernames", getLastEditTime())
+})
+```
+.. And since we add it as a string, we need to parse it back to time format, in order to check if is a newer or older file.
+
+```golang
+file_date_remote, err := time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", string(api_read))
 ```
 
+We can now use this data to calculate if we need to change the file.. or just send the request back..
+```golang
+if file_date_remote.Before(getLastEditTime()){
+	// our file is newer.. send the request back.
+	go SendUpdateRequests()
+	return "Request sent back. reason: newer file spotted."
+}else if file_date_remote.Equal(getLastEditTime()) {
+	// file is the same
+	return "Request denied. File date the same.."
+}
 
-
+println("Old file spotted, changing the file..")
+```
 1. A client node inserts a username (and IP, but this is automated, 
 <it> see line 42 in server.go </it>) into a json file on a host node. 
 <br>
