@@ -11,6 +11,44 @@ other hosts in our network. The network contains a list of IPs that have at leas
  
 <p> There is also a routine that requests update from the other host every 5 minutes. This goes in a 
 sepeate thread while the application runs. </p>
+```golang
+func runUpdateEveryFiveMinute(){
+	time.Sleep(20 * time.Second) // to skip update request while the web-server boots up.
+	for true {
+		SendUpdateRequests()
+		time.Sleep(5 * time.Minute)
+	}
+}
+```
+<p> With help from golang, we retrived last edited date from the file.. </p>
+```golang
+/**
+	Get the latest edited time of the file.
+	@return time of last edit.
+ */
+func getLastEditTime() time.Time {
+	file, err := os.Open("output1.json")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fi, err := file.Stat()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	file.Close()
+	// Return the time of when the file was last modified.
+	return fi.ModTime()
+}
+```
+<p> And with a coded API, we can retrive a remote servers's files modified date, and by that we can use that data to find out if a servers file is outdated or not. 
+</p>
+```golang
+m.Get("/api/data/fileLastEdited", func(r render.Render) {
+		r.HTML(200, "apiUsernames", getLastEditTime())
+	})
+```
+
 
 
 1. A client node inserts a username (and IP, but this is automated, 
