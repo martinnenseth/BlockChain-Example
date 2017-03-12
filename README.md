@@ -19,7 +19,7 @@ func runUpdateEveryFiveMinute(){
 	}
 }
 ```
-For retriving a file latest modifiy date, we used file.Stat()'s ModTime to get out the date..
+For receiving a file latest modify date, we used file.Stat()'s ModTime to get out the date.
 
 ```golang
 func getLastEditTime() time.Time {
@@ -37,7 +37,7 @@ func getLastEditTime() time.Time {
 	return fi.ModTime()
 }
 ```
-.. So the modify date can be collected from remote, we needed a API.
+.. So the modify date can be collected from remote, we needed an API.
 
 ```golang
 m.Get("/api/data/fileLastEdited", func(r render.Render) {
@@ -50,7 +50,7 @@ m.Get("/api/data/fileLastEdited", func(r render.Render) {
 file_date_remote, err := time.Parse("2006-01-02 15:04:05.999999999 -0700 MST", string(api_read))
 ```
 
-We can now use this data to calculate if we need to change the file.. or just send the request back..
+We can now use this data to calculate if we need to change the file.. or just send the request back.
 ```golang
 if file_date_remote.Before(getLastEditTime()){
 	// our file is newer.. send the request back.
@@ -63,13 +63,5 @@ if file_date_remote.Before(getLastEditTime()){
 
 println("Old file spotted, changing the file..")
 ```
-1. A client node inserts a username (and IP, but this is automated, 
-<it> see line 42 in server.go </it>) into a json file on a host node. 
-<br>
-2. The host node requests all the nodes in the json file to update their file, 
-to match the newest version of the file. 
-<br>
-2.1. All nodes fullfil the hosts request if the last edited time of the host file
- is newer than the client's.
-<br>
+
 ![alt tag](https://scontent-arn2-1.xx.fbcdn.net/v/t35.0-12/17195398_10211771329536156_738295374_o.png?oh=b7dfb1e7bcdeee6813cf897b273b53bf&oe=58C50EE5)
