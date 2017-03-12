@@ -7,7 +7,7 @@ A disributed list application implemented in GoLang.
 The application is based around a file named output1.json. This file include all of the username(s),
 we've collected.. This will increase when someone add their username in the web interface.
 <br><br> Each time a user add a username, it will add it to our file(output1.json) and send a request to
-other hosts in our network. The network contains a list of IPs that have submitted at least 1 username. 
+other hosts in our network. The network contains a list of IPs that have at least submitted 1 username. 
  
 <p> There is also a routine that requests update from the other host every 5 minutes. This goes in a 
 sepeate thread while the application runs. </p>
