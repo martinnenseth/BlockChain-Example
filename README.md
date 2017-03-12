@@ -2,16 +2,13 @@
 
 ## About
 A disributed list application implemented in GoLang. 
-<br><br>
-<b> How it works </b> <br>
-The application is based around a file named output1.json. This file include all of the username(s),
-we've collected.. This will increase when someone add their username in the web interface.
-<br><br> Each time a user add a username, it will add it to our file(output1.json) and send a request to
-other hosts in our network. The network contains a list of IPs that have at least submitted 1 username. 
- 
-<p> There is also a routine that requests update from the other host every 5 minutes. This goes in a 
-sepeate thread while the application runs. </p>
-
+<br><br><p>
+The application is based on a file named output1.json. This file includes all of the username(s), we've collected. This will increase when someone adds their username in the web interface. 
+</p><p>
+Each time a user add a username, it will add it to our file(output1.json) and send a request to other hosts in our network. The network contains a list of IPs that have at least submitted 1 username.
+</p><p>
+There is also a routine that requests an update from the other host every 5 minutes. This goes in a separate thread while the application runs.
+</p>
 
 ```golang
 func runUpdateEveryFiveMinute(){
