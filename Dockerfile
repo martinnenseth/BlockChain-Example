@@ -11,6 +11,6 @@ RUN go get github.com/go-martini/martini
 RUN go get github.com/martini-contrib/render
 
 RUN go build server.go
-RUN go run server.go
+EXEC go run server.go
 
 EXPOSE 8080
