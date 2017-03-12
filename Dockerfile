@@ -21,5 +21,4 @@ RUN go build server.go
 ENTRYPOINT ["go", "run", "server.go"]
 
 # Exposes port 8080
-# testcomment
 EXPOSE 8080
