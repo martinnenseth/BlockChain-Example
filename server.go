@@ -4,7 +4,7 @@ import (
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/render"
 	"net/http"
-	"JsonRW/jsonReadWrite.go"
+	"JsonRW/JsonRW"
 	"io/ioutil"
 	"os"
 	"log"
