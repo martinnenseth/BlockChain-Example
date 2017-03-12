@@ -4,7 +4,7 @@ import (
 	"github.com/go-martini/martini"
 	"github.com/martini-contrib/render"
 	"net/http"
-	"./JsonRW"
+	"BlockChain-Example/JsonRW"
 	"io/ioutil"
 	"os"
 	"log"
@@ -121,7 +121,7 @@ func main() {
 		fromHost := string(r.FormValue("addr"))
 		// get token provided
 		token := string(r.FormValue("token"))
-		
+
 		// Check if host is authorised to update our data.
 		if token != "someTokenToPreventUnauthoriseUpdateRequest" {return "bad token"}
 
@@ -289,9 +289,3 @@ func runUpdateEveryFiveMinute(){
 		time.Sleep(5 * time.Minute)
 	}
 }
-
-	
-
-
-
-
