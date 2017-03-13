@@ -209,16 +209,16 @@ func SendUpdateRequests() {
 			req, err := http.NewRequest("POST", url, strings.NewReader(form.Encode()))
 
 			if err != nil {
-				println(err)
+				println(err.Error())
 			}
 			req.PostForm = form
 			req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 			resp, err := hc.Do(req)
 
-			print(resp)
+			print(string(resp.Body))
 
 			if err != nil {
-				println(err)
+				println(err.Error())
 			}
 			//resp_string, err := ioutil.ReadAll(resp.Body)
 			//println(string(resp_string))
