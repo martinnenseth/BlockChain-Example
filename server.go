@@ -198,7 +198,7 @@ func SendUpdateRequests() {
 	host_ip := getServerIP()
 
 	// for each server in our server list
-	hc := http.Client{Timeout: 20}
+	hc := http.Client{Timeout: 200}
 	form := url.Values{}
 	form.Add("addr", "http://"+host_ip+":8080")
 	form.Add("token", "someTokenToPreventUnauthoriseUpdateRequest")
@@ -221,7 +221,7 @@ func SendUpdateRequests() {
 			}
 			response, _ := ioutil.ReadAll(resp.Body)
 			print(string(response))
-			
+
 			//resp_string, err := ioutil.ReadAll(resp.Body)
 			//println(string(resp_string))
 
