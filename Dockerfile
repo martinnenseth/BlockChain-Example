@@ -18,7 +18,8 @@ RUN go get github.com/martini-contrib/render
 
 # Builds the binary on docker build
 RUN go build server.go
-ENTRYPOINT ["go", "run", "server.go"]
+ENTRYPOINT ["./server"]
+#ENTRYPOINT ["go", "run", "server.go"]
 
 # Exposes port 8080
 EXPOSE 8080
