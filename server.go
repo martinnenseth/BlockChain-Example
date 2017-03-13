@@ -214,8 +214,8 @@ func SendUpdateRequests() {
 			req.PostForm = form
 			req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 			resp, err := hc.Do(req)
-
-			print(string(resp.Body))
+			response, _ := ioutil.ReadAll(resp.Body)
+			print(string(response))
 
 			if err != nil {
 				println(err.Error())
