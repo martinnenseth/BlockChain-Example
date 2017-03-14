@@ -64,4 +64,4 @@ if file_date_remote.Before(getLastEditTime()){
 println("Old file spotted, changing the file..")
 ```
 
-![alt tag](https://scontent-arn2-1.xx.fbcdn.net/v/t35.0-12/17195398_10211771329536156_738295374_o.png?oh=b7dfb1e7bcdeee6813cf897b273b53bf&oe=58C50EE5)
+![alt tag](https://www.dropbox.com/s/me1na9q1qe3nod6/DistrList.png?dl=0)
