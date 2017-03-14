@@ -65,3 +65,10 @@ println("Old file spotted, changing the file..")
 ```
 
 ![alt tag](https://scontent-arn2-1.xx.fbcdn.net/v/t35.0-12/17311598_10211823475639776_1215938945_o.png?oh=f6940a0a6e840f1e29bbc07e00b3d376&oe=58CA28F1)
+
+
+##API
+/register	POST name
+/list		GET json - usernames = { "uers: {"name": "Ola"}
+More will be added
+
