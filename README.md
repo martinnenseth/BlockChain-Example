@@ -1,5 +1,22 @@
 # Distrubuted List
+## API's
 
+```
+~/api/data/filesize
+```
+Will return size in bytes..
+```
+~/api/data/json
+```
+Will return full json file of the content of our username list
+```
+~/api/data/accountName
+```
+Will count all of the usernames and display the amount of usernames in our json file.
+```
+~/api/data/fileLastEdited
+```
+Will display the full date of the jsonfile lastest modify date
 ## About
 A disributed list application implemented in GoLang. 
 <br><br><p>
