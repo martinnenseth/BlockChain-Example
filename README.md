@@ -1,22 +1,11 @@
 # Distrubuted List
-## API's
+//What 
 
-```
-~/api/data/filesize
-```
-Will return size in bytes..
-```
-~/api/data/json
-```
-Will return full json file of the content of our username list
-```
-~/api/data/accountName
-```
-Will count all of the usernames and display the amount of usernames in our json file.
-```
-~/api/data/fileLastEdited
-```
-Will display the full date of the jsonfile lastest modify date
+//How
+
+<img src ="http://imgur.com/CS9cUnw">
+
+
 ## About
 A disributed list application implemented in GoLang. 
 <br><br><p>
@@ -81,11 +70,27 @@ if file_date_remote.Before(getLastEditTime()){
 println("Old file spotted, changing the file..")
 ```
 
-![alt tag](https://scontent-arn2-1.xx.fbcdn.net/v/t35.0-12/17311598_10211823475639776_1215938945_o.png?oh=f6940a0a6e840f1e29bbc07e00b3d376&oe=58CA28F1)
+## API's
 
+```
+~/api/data/filesize
+```
+Will return size in bytes..
+```
+~/api/data/json
+```
+Will return full json file of the content of our username list
+```
+~/api/data/accountName
+```
+Will count all of the usernames and display the amount of usernames in our json file.
+```
+~/api/data/fileLastEdited
+```
+Will display the full date of the jsonfile lastest modify date
 
-##API
 /register	POST name
+
 /list		GET json - usernames = { "uers: {"name": "Ola"}
-More will be added
+
 
