@@ -3,7 +3,7 @@
 
 //How
 
-<img src ="http://imgur.com/CS9cUnw">
+<img src ="http://i.imgur.com/CS9cUnw.png">
 
 
 ## About
