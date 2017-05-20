@@ -1,10 +1,10 @@
 # Distrubuted List
-To ensure that a range of servers have the same content(in our example we've picked a list of usernames), we need to create some software that look for difference and apply changes. We've done so by having threads in our software to check other servers in our network using the API. This check the date of the file, if the file is newer than the requested host, we simply change the content. 
-
+<p>To ensure that a range of servers have the same content(in our example we've picked a list of usernames), we need to create some software that look for difference and apply changes. We've done so by having threads in our software to checks other servers in our network using the API. This check the date of the file, if the file is newer than the requested host, we simply change the content. 
+</p><p>
 When a new username is submitted to one of the servers webpage, it automaticlly starts requesting other servers to get the new content it've gathered. Otherwise, as mention it'll check for it every 5 minutes. 
-
+</p> <p>
 For more detailed description and code example.. Please look below! 
-
+</p>
 <img src ="http://i.imgur.com/CS9cUnw.png">
 
 
