@@ -1,4 +1,21 @@
 # Distrubuted List
+<b>The following user / system scenarios is implemented:</b><br>
+<br>
+1. A user(client) access a Node trough an URL: <br>
+http://ip-address:port/ and gets an html file with a
+form element and fills in his / her username and sumbits the data to the
+server. When the user does this, the username is added to the list.
+
+2. A user (Client) views the last version of an updated list with user names
+registered in the distributed system (this is a GET request with path
+http://ip-address:port/members
+
+3.  a server (acting like a client) requests a last updated list from another
+server which responds with a JSON-respons
+http://ip-address:port/api/data/json
+
+
+
 <p>To ensure that a range of servers have the same content(in our example we've picked a list of usernames), we need to create some software that look for difference and apply changes. We've done so by having threads in our software to checks other servers in our network using the API. This check the date of the file, if the file is newer than the requested host, we simply change the content. 
 </p><p>
 When a new username is submitted to one of the servers webpage, it automaticlly starts requesting other servers to get the new content it've gathered. Otherwise, as mention it'll check for it every 5 minutes. 
